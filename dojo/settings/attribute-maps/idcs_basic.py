@@ -3,7 +3,6 @@ DefectDojo missing "basic" attributes used by IDCS - so we don't have to use DD_
 
 As per https://djangosaml2.readthedocs.io/contents/setup.html#attribute-map:
 This is a copy of https://github.com/IdentityPython/pysaml2/blob/7cb4f09dce87a7e8098b9c7552ebab8bc77bc896/src/saml2/attributemaps/basic.py
-And the modified just for our IDCS mapping
 """
 
 DEF = ""
