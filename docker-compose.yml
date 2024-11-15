@@ -45,12 +45,12 @@ services:
       DD_SECRET_KEY: "${DD_SECRET_KEY:-hhZCp@D28z!n@NED*yB!ROMt+WzsY*iq}"
       DD_CREDENTIAL_AES_256_KEY: "${DD_CREDENTIAL_AES_256_KEY:-&91a*agLqesc*0DJ+2*bAbsUZfR*4nLw}"
       DD_DATABASE_READINESS_TIMEOUT: "${DD_DATABASE_READINESS_TIMEOUT:-30}"
-      # DD_SAML2_ENABLED: 'true'
-      # DD_SAML2_METADATA_LOCAL_FILE_PATH: ...
-      # DD_SITE_URL: http://localhost:8080
-      # DD_SOCIAL_LOGIN_AUTO_REDIRECT: "true"
-      # DD_SOCIAL_AUTH_SHOW_LOGIN_FORM: "false"
-      # DD_SAML2_CREATE_USER: "true"
+      DD_SAML2_ENABLED: 'true'
+      DD_SAML2_METADATA_AUTO_CONF_URL: https://dev-kymrsexea3lyaiez.eu.auth0.com/samlp/metadata/Ctlb0qgLOHMm2y9HSzxmn5OfSFEk08PH
+      DD_SITE_URL: http://localhost:8080
+      DD_SOCIAL_LOGIN_AUTO_REDIRECT: "true"
+      DD_SOCIAL_AUTH_SHOW_LOGIN_FORM: "false"
+      DD_SAML2_CREATE_USER: "true"
     volumes:
         - type: bind
           source: ./docker/extra_settings
