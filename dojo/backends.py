@@ -1,11 +1,12 @@
 import logging
 import re
+from functools import cached_property
 
+from django.conf import settings
 from djangosaml2.backends import Saml2Backend as _Saml2Backend
 
 from dojo.authorization.roles_permissions import Roles
 from dojo.models import Dojo_Group, Dojo_Group_Member, Role
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +15,18 @@ class Saml2Backend(_Saml2Backend):
 
     """Subclass to handle adding SAML2 groups as DefectDojo/Django groups to a user"""
 
+    @cached_property
+    def group_re(self):
+        if not settings.SAML2_ENABLED or not settings.SAML2_GROUPS_ATTRIBUTE or not settings.SAML2_GROUPS_FILTER:
+            return None
+        return re.compile(settings.SAML2_GROUPS_FILTER)
+
     def _update_user(
-        self, user, attributes: dict, attribute_mapping: dict, force_save: bool = False,
+        self,
+        user,
+        attributes: dict,
+        attribute_mapping: dict,
+        force_save=False,
     ):
         """
         Method overriden to handle groups after user object is saved.
@@ -26,22 +37,20 @@ class Saml2Backend(_Saml2Backend):
         This is not a big issue and it works around an existing bug with dojo/group/utils.py::group_post_save_handler (user does not yet exist and he is forcefully added to the new group - boom)
         """
         user = super()._update_user(user, attributes, attribute_mapping, force_save=force_save)
-        if not settings.SAML2_ENABLED or not settings.SAML2_GROUPS_FILTER:
+        if self.group_re is None:
             return user
 
-        saml_re = re.compile(settings.SAML2_GROUPS_FILTER)
-
         # list of all existing "SAML2-mapped" groups
-        all_saml_groups = {
-            group.name: group
-            for group in Dojo_Group.objects.all()
-            if saml_re.match(group.name)
-        }
+        all_saml_groups = {group.name: group for group in Dojo_Group.objects.all() if self.group_re.match(group.name)}
 
         # list of groups user MUST have
         needs_groups = set()
-        if attributes["groups"]:
-            needs_groups.update(group_name for group_name in attributes["groups"] if saml_re.match(group_name))
+        if attributes[settings.SAML2_GROUPS_ATTRIBUTE]:
+            needs_groups.update(
+                group_name
+                for group_name in attributes[settings.SAML2_GROUPS_ATTRIBUTE]
+                if self.group_re.match(group_name)
+            )
 
         # list of groups user ALREADY has
         has_groups = {
