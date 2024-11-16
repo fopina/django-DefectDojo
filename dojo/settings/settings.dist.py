@@ -155,7 +155,7 @@ env = environ.FileAwareEnv(
     DD_SOCIAL_AUTH_GITHUB_ENTERPRISE_SECRET=(str, ""),
     DD_SAML2_ENABLED=(bool, False),
     # Allows to override default SAML authentication backend. Check https://djangosaml2.readthedocs.io/contents/setup.html#custom-user-attributes-processing
-    DD_SAML2_AUTHENTICATION_BACKENDS=(str, "dojo.backends.Saml2Backend"),
+    DD_SAML2_AUTHENTICATION_BACKENDS=(str, "djangosaml2.backends.Saml2Backend"),
     # Force Authentication to make SSO possible with SAML2
     DD_SAML2_FORCE_AUTH=(bool, True),
     DD_SAML2_LOGIN_BUTTON_TEXT=(str, "Login with SAML"),
@@ -168,23 +168,15 @@ env = environ.FileAwareEnv(
     DD_SAML2_ENTITY_ID=(str, ""),
     # Allow to create user that are not already in the Django database
     DD_SAML2_CREATE_USER=(bool, False),
-    DD_SAML2_ATTRIBUTES_MAP=(
-        dict,
-        {
-            # Change Email/UserName/FirstName/LastName to corresponding SAML2 userprofile attributes.
-            # format: SAML attrib:django_user_model
-            "Email": "email",
-            "UserName": "username",
-            "Firstname": "first_name",
-            "Lastname": "last_name",
-        },
-    ),
+    DD_SAML2_ATTRIBUTES_MAP=(dict, {
+        # Change Email/UserName/FirstName/LastName to corresponding SAML2 userprofile attributes.
+        # format: SAML attrib:django_user_model
+        "Email": "email",
+        "UserName": "username",
+        "Firstname": "first_name",
+        "Lastname": "last_name",
+    }),
     DD_SAML2_ALLOW_UNKNOWN_ATTRIBUTE=(bool, False),
-    # similar to DD_SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_GROUPS_FILTER, regular expression for which SAML2 groups to map to Dojo groups (with same name)
-    # Groups need to already exist in Dojo. And if value is not set, no group processing is done
-    DD_SAML2_GROUPS_FILTER=(str, ""),
-    # SAML2 attribute with groups to match in Dojo. And if value is not set, no group processing is done
-    DD_SAML2_GROUPS_ATTRIBUTE=(str, ""),
     # Authentication via HTTP Proxy which put username to HTTP Header REMOTE_USER
     DD_AUTH_REMOTEUSER_ENABLED=(bool, False),
     # Names of headers which will be used for processing user data.
@@ -284,27 +276,8 @@ env = environ.FileAwareEnv(
     # for very large objects
     DD_DELETE_PREVIEW=(bool, True),
     # List of acceptable file types that can be uploaded to a given object via arbitrary file upload
-    DD_FILE_UPLOAD_TYPES=(
-        list,
-        [
-            ".txt",
-            ".pdf",
-            ".json",
-            ".xml",
-            ".csv",
-            ".yml",
-            ".png",
-            ".jpeg",
-            ".sarif",
-            ".xlsx",
-            ".doc",
-            ".html",
-            ".js",
-            ".nessus",
-            ".zip",
-            ".fpr",
-        ],
-    ),
+    DD_FILE_UPLOAD_TYPES=(list, [".txt", ".pdf", ".json", ".xml", ".csv", ".yml", ".png", ".jpeg",
+                                 ".sarif", ".xlsx", ".doc", ".html", ".js", ".nessus", ".zip", ".fpr"]),
     # Max file size for scan added via API in MB
     DD_SCAN_FILE_MAX_SIZE=(int, 100),
     # When disabled, existing user tokens will not be removed but it will not be
@@ -485,7 +458,9 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
-FILE_UPLOAD_HANDLERS = ("django.core.files.uploadhandler.TemporaryFileUploadHandler",)
+FILE_UPLOAD_HANDLERS = (
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+)
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = env("DD_DATA_UPLOAD_MAX_MEMORY_SIZE")
 
@@ -638,15 +613,9 @@ DOCUMENTATION_URL = env("DD_DOCUMENTATION_URL")
 SLA_NOTIFY_ACTIVE = env("DD_SLA_NOTIFY_ACTIVE")  # this will include 'verified' findings as well as non-verified.
 SLA_NOTIFY_ACTIVE_VERIFIED_ONLY = env("DD_SLA_NOTIFY_ACTIVE_VERIFIED_ONLY")
 SLA_NOTIFY_WITH_JIRA_ONLY = env("DD_SLA_NOTIFY_WITH_JIRA_ONLY")  # Based on the 2 above, but only with a JIRA link
-SLA_NOTIFY_PRE_BREACH = env(
-    "DD_SLA_NOTIFY_PRE_BREACH",
-)  # in days, notify between dayofbreach minus this number until dayofbreach
-SLA_NOTIFY_POST_BREACH = env(
-    "DD_SLA_NOTIFY_POST_BREACH",
-)  # in days, skip notifications for findings that go past dayofbreach plus this number
-SLA_BUSINESS_DAYS = env(
-    "DD_SLA_BUSINESS_DAYS",
-)  # Use business days to calculate SLA's and age of a finding instead of calendar days
+SLA_NOTIFY_PRE_BREACH = env("DD_SLA_NOTIFY_PRE_BREACH")  # in days, notify between dayofbreach minus this number until dayofbreach
+SLA_NOTIFY_POST_BREACH = env("DD_SLA_NOTIFY_POST_BREACH")  # in days, skip notifications for findings that go past dayofbreach plus this number
+SLA_BUSINESS_DAYS = env("DD_SLA_BUSINESS_DAYS")  # Use business days to calculate SLA's and age of a finding instead of calendar days
 
 
 SEARCH_MAX_RESULTS = env("DD_SEARCH_MAX_RESULTS")
@@ -696,13 +665,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # https://django-ratelimit.readthedocs.io/en/stable/index.html
 RATE_LIMITER_ENABLED = env("DD_RATE_LIMITER_ENABLED")
-RATE_LIMITER_RATE = env(
-    "DD_RATE_LIMITER_RATE",
-)  # Examples include 5/m 100/h and more https://django-ratelimit.readthedocs.io/en/stable/rates.html#simple-rates
+RATE_LIMITER_RATE = env("DD_RATE_LIMITER_RATE")  # Examples include 5/m 100/h and more https://django-ratelimit.readthedocs.io/en/stable/rates.html#simple-rates
 RATE_LIMITER_BLOCK = env("DD_RATE_LIMITER_BLOCK")  # Block the requests after rate limit is exceeded
-RATE_LIMITER_ACCOUNT_LOCKOUT = env(
-    "DD_RATE_LIMITER_ACCOUNT_LOCKOUT",
-)  # Forces the user to change password on next login.
+RATE_LIMITER_ACCOUNT_LOCKOUT = env("DD_RATE_LIMITER_ACCOUNT_LOCKOUT")  # Forces the user to change password on next login.
 
 # ------------------------------------------------------------------------------
 # SECURITY DIRECTIVES
@@ -744,9 +709,7 @@ if env("DD_CSRF_TRUSTED_ORIGINS") != ["[]"]:
 
 # Unless set to None, the SecurityMiddleware sets the Cross-Origin Opener Policy
 # header on all responses that do not already have it to the value provided.
-SECURE_CROSS_ORIGIN_OPENER_POLICY = (
-    env("DD_SECURE_CROSS_ORIGIN_OPENER_POLICY") if env("DD_SECURE_CROSS_ORIGIN_OPENER_POLICY") != "None" else None
-)
+SECURE_CROSS_ORIGIN_OPENER_POLICY = env("DD_SECURE_CROSS_ORIGIN_OPENER_POLICY") if env("DD_SECURE_CROSS_ORIGIN_OPENER_POLICY") != "None" else None
 
 if env("DD_SECURE_PROXY_SSL_HEADER"):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -802,8 +765,12 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.DjangoModelPermissions",),
-    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.DjangoModelPermissions",
+    ),
+    "DEFAULT_RENDERER_CLASSES": (
+        "rest_framework.renderers.JSONRenderer",
+    ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 25,
     "EXCEPTION_HANDLER": "dojo.api_v2.exception_handler.custom_exception_handler",
@@ -925,7 +892,8 @@ if env("DD_WHITENOISE"):
     ]
     MIDDLEWARE = MIDDLEWARE + WHITE_NOISE
 
-EMAIL_CONFIG = env.email_url("DD_EMAIL_URL", default="smtp://user@:password@localhost:25")
+EMAIL_CONFIG = env.email_url(
+    "DD_EMAIL_URL", default="smtp://user@:password@localhost:25")
 
 vars().update(EMAIL_CONFIG)
 
@@ -954,7 +922,6 @@ if SAML2_ENABLED:
 
     import saml2
     import saml2.saml
-
     # SSO_URL = env('DD_SSO_URL')
     SAML_METADATA = {}
     if len(env("DD_SAML2_METADATA_AUTO_CONF_URL")) > 0:
@@ -968,7 +935,7 @@ if SAML2_ENABLED:
     SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
     SAML_IGNORE_LOGOUT_ERRORS = True
     SAML_DJANGO_USER_MAIN_ATTRIBUTE = "username"
-    #    SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
+#    SAML_DJANGO_USER_MAIN_ATTRIBUTE_LOOKUP = '__iexact'
     SAML_USE_NAME_ID_AS_USERNAME = True
     SAML_CREATE_UNKNOWN_USER = env("DD_SAML2_CREATE_USER")
     SAML_ATTRIBUTE_MAPPING = saml2_attrib_map_format(env("DD_SAML2_ATTRIBUTES_MAP"))
@@ -983,8 +950,10 @@ if SAML2_ENABLED:
     SAML_CONFIG = {
         # full path to the xmlsec1 binary programm
         "xmlsec_binary": "/usr/bin/xmlsec1",
+
         # your entity id, usually your subdomain plus the url to the metadata view
         "entityid": str(SAML2_ENTITY_ID),
+
         # directory with attribute mapping
         "attribute_map_dir": path.join(BASEDIR, "attribute-maps"),
         # do now discard attributes not specified in attribute-maps
@@ -999,32 +968,41 @@ if SAML2_ENABLED:
                 "want_assertions_signed": True,
                 "force_authn": SAML_FORCE_AUTH,
                 "allow_unsolicited": True,
+
                 # For Okta add signed logout requets. Enable this:
                 # "logout_requests_signed": True,
+
                 "endpoints": {
                     # url and binding to the assetion consumer service view
                     # do not change the binding or service name
                     "assertion_consumer_service": [
-                        (f"{SITE_URL}/saml2/acs/", saml2.BINDING_HTTP_POST),
+                        (f"{SITE_URL}/saml2/acs/",
+                        saml2.BINDING_HTTP_POST),
                     ],
                     # url and binding to the single logout service view
                     # do not change the binding or service name
                     "single_logout_service": [
                         # Disable next two lines for HTTP_REDIRECT for IDP's that only support HTTP_POST. Ex. Okta:
-                        (f"{SITE_URL}/saml2/ls/", saml2.BINDING_HTTP_REDIRECT),
-                        (f"{SITE_URL}/saml2/ls/post", saml2.BINDING_HTTP_POST),
+                        (f"{SITE_URL}/saml2/ls/",
+                        saml2.BINDING_HTTP_REDIRECT),
+                        (f"{SITE_URL}/saml2/ls/post",
+                        saml2.BINDING_HTTP_POST),
                     ],
                 },
+
                 # attributes that this project need to identify a user
                 "required_attributes": ["Email", "UserName"],
+
                 # attributes that may be useful to have but not required
                 "optional_attributes": ["Firstname", "Lastname"],
+
                 # in this section the list of IdPs we talk to are defined
                 # This is not mandatory! All the IdP available in the metadata will be considered.
                 # 'idp': {
                 #     # we do not need a WAYF service since there is
                 #     # only an IdP defined here. This IdP should be
                 #     # present in our metadata
+
                 #     # the keys of this dictionary are entity ids
                 #     'https://localhost/simplesaml/saml2/idp/metadata.php': {
                 #         'single_sign_on_service': {
@@ -1037,35 +1015,36 @@ if SAML2_ENABLED:
                 # },
             },
         },
+
         # where the remote metadata is stored, local, remote or mdq server.
         # One metadatastore or many ...
         "metadata": SAML_METADATA,
+
         # set to 1 to output debugging information
         "debug": 0,
+
         # Signing
         # 'key_file': path.join(BASEDIR, 'private.key'),  # private part
         # 'cert_file': path.join(BASEDIR, 'public.pem'),  # public part
+
         # Encryption
         # 'encryption_keypairs': [{
         #     'key_file': path.join(BASEDIR, 'private.key'),  # private part
         #     'cert_file': path.join(BASEDIR, 'public.pem'),  # public part
         # }],
+
         # own metadata settings
         "contact_person": [
-            {
-                "given_name": "Lorenzo",
-                "sur_name": "Gil",
-                "company": "Yaco Sistemas",
-                "email_address": "lgs@yaco.es",
-                "contact_type": "technical",
-            },
-            {
-                "given_name": "Angel",
-                "sur_name": "Fernandez",
-                "company": "Yaco Sistemas",
-                "email_address": "angel@yaco.es",
-                "contact_type": "administrative",
-            },
+            {"given_name": "Lorenzo",
+            "sur_name": "Gil",
+            "company": "Yaco Sistemas",
+            "email_address": "lgs@yaco.es",
+            "contact_type": "technical"},
+            {"given_name": "Angel",
+            "sur_name": "Fernandez",
+            "company": "Yaco Sistemas",
+            "email_address": "angel@yaco.es",
+            "contact_type": "administrative"},
         ],
         # you can set multilanguage information here
         "organization": {
@@ -1075,8 +1054,6 @@ if SAML2_ENABLED:
         },
         "valid_for": 24,  # how long is our metadata valid
     }
-    SAML2_GROUPS_ATTRIBUTE = env("DD_SAML2_GROUPS_ATTRIBUTE")
-    SAML2_GROUPS_FILTER = env("DD_SAML2_GROUPS_FILTER")
 
 # ------------------------------------------------------------------------------
 # REMOTE_USER
@@ -1106,28 +1083,25 @@ for i in range(len(MIDDLEWARE)):
         break
 
 if AUTH_REMOTEUSER_ENABLED:
-    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = ("dojo.remote_user.RemoteUserAuthentication",) + REST_FRAMEWORK[
-        "DEFAULT_AUTHENTICATION_CLASSES"
-    ]
+    REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = \
+        ("dojo.remote_user.RemoteUserAuthentication",) + \
+        REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"]
 
 # ------------------------------------------------------------------------------
 # CELERY
 # ------------------------------------------------------------------------------
 
 # Celery settings
-CELERY_BROKER_URL = (
-    env("DD_CELERY_BROKER_URL")
-    if len(env("DD_CELERY_BROKER_URL")) > 0
-    else generate_url(
-        scheme=env("DD_CELERY_BROKER_SCHEME"),
-        double_slashes=True,
-        user=env("DD_CELERY_BROKER_USER"),
-        password=env("DD_CELERY_BROKER_PASSWORD"),
-        host=env("DD_CELERY_BROKER_HOST"),
-        port=env("DD_CELERY_BROKER_PORT"),
-        path=env("DD_CELERY_BROKER_PATH"),
-        params=env("DD_CELERY_BROKER_PARAMS"),
-    )
+CELERY_BROKER_URL = env("DD_CELERY_BROKER_URL") \
+    if len(env("DD_CELERY_BROKER_URL")) > 0 else generate_url(
+    scheme=env("DD_CELERY_BROKER_SCHEME"),
+    double_slashes=True,
+    user=env("DD_CELERY_BROKER_USER"),
+    password=env("DD_CELERY_BROKER_PASSWORD"),
+    host=env("DD_CELERY_BROKER_HOST"),
+    port=env("DD_CELERY_BROKER_PORT"),
+    path=env("DD_CELERY_BROKER_PATH"),
+    params=env("DD_CELERY_BROKER_PARAMS"),
 )
 CELERY_TASK_IGNORE_RESULT = env("DD_CELERY_TASK_IGNORE_RESULT")
 CELERY_RESULT_BACKEND = env("DD_CELERY_RESULT_BACKEND")
@@ -1141,7 +1115,7 @@ CELERY_PASS_MODEL_BY_ID = env("DD_CELERY_PASS_MODEL_BY_ID")
 if len(env("DD_CELERY_BROKER_TRANSPORT_OPTIONS")) > 0:
     CELERY_BROKER_TRANSPORT_OPTIONS = json.loads(env("DD_CELERY_BROKER_TRANSPORT_OPTIONS"))
 
-CELERY_IMPORTS = ("dojo.tools.tool_issue_updater",)
+CELERY_IMPORTS = ("dojo.tools.tool_issue_updater", )
 
 # Celery beat scheduled tasks
 CELERY_BEAT_SCHEDULE = {
@@ -1188,6 +1162,7 @@ CELERY_BEAT_SCHEDULE = {
     #     'task': 'dojo.tasks.fix_loop_duplicates_task',
     #     'schedule': timedelta(hours=12)
     # },
+
 }
 
 # ------------------------------------
@@ -1204,7 +1179,7 @@ if env("DD_DJANGO_METRICS_ENABLED"):
         "django_prometheus.middleware.PrometheusBeforeMiddleware",
         *MIDDLEWARE,
         "django_prometheus.middleware.PrometheusAfterMiddleware",
-    ]
+]
     database_engine = DATABASES.get("default").get("ENGINE")
     DATABASES["default"]["ENGINE"] = database_engine.replace("django.", "django_prometheus.", 1)
     # CELERY_RESULT_BACKEND.replace('django.core','django_prometheus.', 1)
@@ -1238,21 +1213,10 @@ HASHCODE_FIELDS_PER_SCANNER = {
     "Coverity Scan JSON Report": ["title", "cwe", "line", "file_path", "description"],
     "SonarQube Scan": ["cwe", "severity", "file_path"],
     "SonarQube API Import": ["title", "file_path", "line"],
-    "Sonatype Application Scan": [
-        "title",
-        "cwe",
-        "file_path",
-        "component_name",
-        "component_version",
-        "vulnerability_ids",
-    ],
+    "Sonatype Application Scan": ["title", "cwe", "file_path", "component_name", "component_version", "vulnerability_ids"],
     "Dependency Check Scan": ["title", "cwe", "file_path"],
     "Dockle Scan": ["title", "description", "vuln_id_from_tool"],
-    "Dependency Track Finding Packaging Format (FPF) Export": [
-        "component_name",
-        "component_version",
-        "vulnerability_ids",
-    ],
+    "Dependency Track Finding Packaging Format (FPF) Export": ["component_name", "component_version", "vulnerability_ids"],
     "Mobsfscan Scan": ["title", "severity", "cwe"],
     "Tenable Scan": ["title", "severity", "vulnerability_ids", "cwe", "description"],
     "Nexpose Scan": ["title", "severity", "vulnerability_ids", "cwe"],
@@ -1277,20 +1241,11 @@ HASHCODE_FIELDS_PER_SCANNER = {
     "Trivy Scan": ["title", "severity", "vulnerability_ids", "cwe", "description"],
     "TFSec Scan": ["severity", "vuln_id_from_tool", "file_path", "line"],
     "Snyk Scan": ["vuln_id_from_tool", "file_path", "component_name", "component_version"],
-    "GitLab Dependency Scanning Report": [
-        "title",
-        "vulnerability_ids",
-        "file_path",
-        "component_name",
-        "component_version",
-    ],
+    "GitLab Dependency Scanning Report": ["title", "vulnerability_ids", "file_path", "component_name", "component_version"],
     "SpotBugs Scan": ["cwe", "severity", "file_path", "line"],
     "JFrog Xray Unified Scan": ["vulnerability_ids", "file_path", "component_name", "component_version"],
     "JFrog Xray On Demand Binary Scan": ["title", "component_name", "component_version"],
-    "Scout Suite Scan": [
-        "file_path",
-        "vuln_id_from_tool",
-    ],  # for now we use file_path as there is no attribute for "service"
+    "Scout Suite Scan": ["file_path", "vuln_id_from_tool"],  # for now we use file_path as there is no attribute for "service"
     "Meterian Scan": ["cwe", "component_name", "component_version", "description", "severity"],
     "Github Vulnerability Scan": ["title", "severity", "component_name", "vulnerability_ids", "file_path"],
     "Solar Appscreener Scan": ["title", "file_path", "line", "severity"],
@@ -1347,9 +1302,7 @@ if len(env("DD_HASHCODE_FIELDS_PER_SCANNER")) > 0:
     env_hashcode_fields_per_scanner = json.loads(env("DD_HASHCODE_FIELDS_PER_SCANNER"))
     for key, value in env_hashcode_fields_per_scanner.items():
         if key in HASHCODE_FIELDS_PER_SCANNER:
-            logger.info(
-                f"Replacing {key} with value {value} (previously set to {HASHCODE_FIELDS_PER_SCANNER[key]}) from env var DD_HASHCODE_FIELDS_PER_SCANNER",
-            )
+            logger.info(f"Replacing {key} with value {value} (previously set to {HASHCODE_FIELDS_PER_SCANNER[key]}) from env var DD_HASHCODE_FIELDS_PER_SCANNER")
             HASHCODE_FIELDS_PER_SCANNER[key] = value
         if key not in HASHCODE_FIELDS_PER_SCANNER:
             logger.info(f"Adding {key} with value {value} from env var DD_HASHCODE_FIELDS_PER_SCANNER")
@@ -1410,22 +1363,7 @@ HASHCODE_ALLOWS_NULL_CWE = {
 # List of fields that are known to be usable in hash_code computation)
 # 'endpoints' is a pseudo field that uses the endpoints (for dynamic scanners)
 # 'unique_id_from_tool' is often not needed here as it can be used directly in the dedupe algorithm, but it's also possible to use it for hashing
-HASHCODE_ALLOWED_FIELDS = [
-    "title",
-    "cwe",
-    "vulnerability_ids",
-    "line",
-    "file_path",
-    "payload",
-    "component_name",
-    "component_version",
-    "description",
-    "endpoints",
-    "unique_id_from_tool",
-    "severity",
-    "vuln_id_from_tool",
-    "mitigation",
-]
+HASHCODE_ALLOWED_FIELDS = ["title", "cwe", "vulnerability_ids", "line", "file_path", "payload", "component_name", "component_version", "description", "endpoints", "unique_id_from_tool", "severity", "vuln_id_from_tool", "mitigation"]
 
 # Adding fields to the hash_code calculation regardless of the previous settings
 HASH_CODE_FIELDS_ALWAYS = ["service"]
@@ -1595,9 +1533,7 @@ if len(env("DD_DEDUPLICATION_ALGORITHM_PER_PARSER")) > 0:
     env_dedup_algorithm_per_parser = json.loads(env("DD_DEDUPLICATION_ALGORITHM_PER_PARSER"))
     for key, value in env_dedup_algorithm_per_parser.items():
         if key in DEDUPLICATION_ALGORITHM_PER_PARSER:
-            logger.info(
-                f"Replacing {key} with value {value} (previously set to {DEDUPLICATION_ALGORITHM_PER_PARSER[key]}) from env var DD_DEDUPLICATION_ALGORITHM_PER_PARSER",
-            )
+            logger.info(f"Replacing {key} with value {value} (previously set to {DEDUPLICATION_ALGORITHM_PER_PARSER[key]}) from env var DD_DEDUPLICATION_ALGORITHM_PER_PARSER")
             DEDUPLICATION_ALGORITHM_PER_PARSER[key] = value
         if key not in DEDUPLICATION_ALGORITHM_PER_PARSER:
             logger.info(f"Adding {key} with value {value} from env var DD_DEDUPLICATION_ALGORITHM_PER_PARSER")
@@ -1765,10 +1701,7 @@ TAGULOUS_AUTOCOMPLETE_JS = (
 )
 
 # using 'element' for width should take width from css defined in template, but it doesn't. So set to 70% here.
-TAGULOUS_AUTOCOMPLETE_SETTINGS = {
-    "placeholder": "Enter some tags (comma separated, use enter to select / create a new tag)",
-    "width": "70%",
-}
+TAGULOUS_AUTOCOMPLETE_SETTINGS = {"placeholder": "Enter some tags (comma separated, use enter to select / create a new tag)", "width": "70%"}
 
 EDITABLE_MITIGATED_DATA = env("DD_EDITABLE_MITIGATED_DATA")
 
