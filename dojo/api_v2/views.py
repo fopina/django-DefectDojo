@@ -2601,8 +2601,7 @@ class ReImportScanView(mixins.CreateModelMixin, viewsets.GenericViewSet):
     - Create a Product (or use an existing product)
     - Create an Engagement inside the product
     - Import a report which will create a Test
-    - Provide `product_name`
-    - Provide `engagement_name`
+    - Provide ((`product_name` or `product`) and `engagement_name`) or `engagement`
     - Optional: Provide `test_title`
 
     In this scenario Defect Dojo will look up the Test by the provided details.

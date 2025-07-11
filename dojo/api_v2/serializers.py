@@ -2372,6 +2372,12 @@ class ReImportScanSerializer(CommonImportScanSerializer):
     scan_type = serializers.ChoiceField(
         choices=get_choices_sorted(), required=True,
     )
+    engagement = serializers.PrimaryKeyRelatedField(
+        queryset=Engagement.objects.all(), required=False,
+    )
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), required=False,
+    )
     test = serializers.PrimaryKeyRelatedField(
         required=False, queryset=Test.objects.all(),
     )
