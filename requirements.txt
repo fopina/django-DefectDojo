@@ -29,24 +29,24 @@ html2text==2020.1.16
 humanize==3.2.0
 jira==2.0.0
 PyGithub==1.54
-lxml==4.6.2
+# lxml==4.6.2
 Markdown==3.3.3
 mysqlclient==2.0.2
-pandas==1.1.5
+# pandas==1.1.5
 xlrd==1.2.0
 pdfkit==0.6.1
-Pillow==8.0.1  # required by django-imagekit
+#Pillow==8.0.1  # required by django-imagekit
 psycopg2-binary==2.8.6
 cryptography==3.3.1
-python-dateutil==2.8.1
+python-dateutil==2.6.0
 python-nmap==0.6.1
 pytz==2020.4
 redis==3.5.3
-requests==2.25.0
+requests>=2.24.0
 sqlalchemy  # Required by Celery broker transport
 supervisor==4.2.1
-urllib3==1.26.2
-uWSGI==2.0.19.1
+urllib3>=1.24.1
+#uWSGI==2.0.19.1
 vobject==0.9.6.1
 whitenoise==5.2.0
 titlecase==1.1.1

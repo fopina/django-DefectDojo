@@ -5,7 +5,7 @@
 # Dockerfile.nginx to use the caching mechanism of Docker.
 
 # Ref: https://devguide.python.org/#branchstatus
-FROM python:3.6.12-slim-buster@sha256:e5259113df5a7c4dae16ad37c2ca53b1cf722e051cfd5f624e7b76aa72389e0c as build
+FROM python:3.11.11-slim-bookworm@sha256:42420f737ba91d509fc60d5ed65ed0492678a90c561e1fa08786ae8ba8b52eda AS build
 WORKDIR /app
 RUN \
   apt-get -y update && \
@@ -15,6 +15,7 @@ RUN \
     default-mysql-client \
     libmariadb-dev-compat \
     postgresql-client \
+    libpq-dev \
     xmlsec1 \
     git \
     uuid-runtime \
@@ -25,7 +26,7 @@ RUN \
 COPY requirements.txt ./
 RUN pip3 wheel --wheel-dir=/tmp/wheels -r ./requirements.txt
 
-FROM python:3.6.12-slim-buster@sha256:e5259113df5a7c4dae16ad37c2ca53b1cf722e051cfd5f624e7b76aa72389e0c
+FROM python:3.11.11-slim-bookworm@sha256:42420f737ba91d509fc60d5ed65ed0492678a90c561e1fa08786ae8ba8b52eda AS base
 WORKDIR /app
 ARG uid=1001
 ARG appuser=defectdojo
@@ -38,7 +39,8 @@ RUN \
     # libopenjp2-7 libjpeg62 libtiff5 are required by the pillow package
     libopenjp2-7 \
     libjpeg62 \
-    libtiff5 \
+    libtiff6 \
+    libxml2 \
     dnsutils \
     default-mysql-client \
     libmariadb3 \
