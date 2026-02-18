@@ -1,7 +1,0 @@
-$ time ./fixture-updater dojo/fixtures/defect_dojo_sample_data.json 
-INFO Dates moved up by 362.0 days
-INFO Completed in 572ms!
-
-real    0m0.581s
-user    0m0.439s
-sys     0m0.019s

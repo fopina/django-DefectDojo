@@ -22,7 +22,7 @@ jobs:
 
       - name: Run binary
         run: |
-          ./fixture-updater dojo/fixtures/defect_dojo_sample_data.json
+          scripts/fixture-updater.py dojo/fixtures/defect_dojo_sample_data.json
           mv output.json dojo/fixtures/defect_dojo_sample_data.json
 
       - name: Configure git
